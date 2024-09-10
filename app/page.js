@@ -2,6 +2,7 @@ import { Grid2, Stack } from "@mui/material";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import BasicLineChart from "./components/chart/lineChart";
+
 export default function About() {
   return (
     <Container maxWidth="lg">
@@ -20,8 +21,8 @@ export default function About() {
         justifyContent={"center"}
         alignItems={"center"}
       >
-        <Button color="success" variant="contained">
-          Contained
+        <Button color="info" variant="contained">
+          Start
         </Button>
       </Stack>
     </Container>
