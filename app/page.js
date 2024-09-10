@@ -1,33 +1,29 @@
-
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import NextLink from 'next/link';
-import ComboBox from './components/ComboBox';
-
+import { Grid2, Stack } from "@mui/material";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import BasicLineChart from "./components/chart/lineChart";
 export default function About() {
   return (
     <Container maxWidth="lg">
-      <Box
-        sx={{
-          my: 4,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
+      <Grid2 container spacing={2} marginBottom={5} direction={'row'} marginTop={5}>
+        <Grid2 size={6} border={2}>
+          <BasicLineChart></BasicLineChart>
+        </Grid2>
+
+        <Grid2 size={6} border={2}>
+          <BasicLineChart></BasicLineChart>
+        </Grid2>
+      </Grid2>
+      <Stack
+        direction={"row"}
+        spacing={2}
+        justifyContent={"center"}
+        alignItems={"center"}
       >
-        <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
-          Material UI - Next.js example in TypeScript
-        </Typography>
-        <Box sx={{ maxWidth: 'sm' }}>
-          <Button variant="contained" component={NextLink} href="/">
-            Go to the home page
-          </Button>
-        </Box>
-       <ComboBox />
-      </Box>
+        <Button color="success" variant="contained">
+          Contained
+        </Button>
+      </Stack>
     </Container>
   );
 }
