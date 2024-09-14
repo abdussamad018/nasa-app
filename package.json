@@ -15,6 +15,11 @@
     "@mui/icons-material": "latest",
     "@mui/material": "latest",
     "@mui/material-nextjs": "latest",
+    "@mui/x-charts": "^7.17.0",
+    "@mui/x-data-grid": "^7.17.0",
+    "@mui/x-date-pickers": "^7.17.0",
+    "@mui/x-tree-view": "^7.17.0",
+    "dayjs": "^1.11.13",
     "eslint": "latest",
     "eslint-config-next": "latest",
     "next": "latest",
@@ -22,6 +27,7 @@
     "react-dom": "latest"
   },
   "devDependencies": {
+    "@types/node": "22.5.5",
     "eslint": "^8",
     "eslint-config-next": "14.2.11"
   }
