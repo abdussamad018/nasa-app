@@ -5,8 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fba5ac9a-92d6-4067-b148-4e6a687abaec" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/dashboard/components/Elements/SelectBox.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/dashboard/components/NasaApp.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/abc/page.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/api/datafile/route.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/components/MarsLineChart.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/dashboard/components/NasaApp.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/components/NasaApp.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
@@ -64,11 +67,25 @@
       <workItem from="1726252622999" duration="687000" />
       <workItem from="1726294115126" duration="12881000" />
       <workItem from="1726332860546" duration="2272000" />
-      <workItem from="1726335989181" duration="1210000" />
+      <workItem from="1726335989181" duration="1863000" />
+      <workItem from="1726681015681" duration="2187000" />
+      <workItem from="1726758490588" duration="10951000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/app/dashboard/components/NasaApp.jsx</url>
+          <line>41</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

@@ -19,11 +19,14 @@
     "@mui/x-data-grid": "^7.17.0",
     "@mui/x-date-pickers": "^7.17.0",
     "@mui/x-tree-view": "^7.17.0",
+    "chart.js": "^4.4.4",
     "dayjs": "^1.11.13",
     "eslint": "latest",
     "eslint-config-next": "latest",
     "next": "latest",
+    "plotly.js-dist": "^2.35.2",
     "react": "latest",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "latest"
   },
   "devDependencies": {

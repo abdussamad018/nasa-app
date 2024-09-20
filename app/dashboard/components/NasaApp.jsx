@@ -1,10 +1,12 @@
+"use client";
 import {useEffect, useState} from 'react';
 import {useTheme} from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import SelectBox from './Elements/SelectBox'; // Assuming SelectBox is a styled Select component
+import SelectBox from './Elements/SelectBox';
+import {Autocomplete, TextField} from "@mui/material"; // Assuming SelectBox is a styled Select component
 
 export default function NasaApp() {
     const theme = useTheme();
@@ -19,6 +21,10 @@ export default function NasaApp() {
     const [timeRange, setTimeRange] = useState('');
     const [method, setMethod] = useState('');
     const [timeRangeOptions, setTimeRangeOptions] = useState([]);
+    const [dataFile, setDataFile] = useState([]);
+
+    const datefileOption = [];
+
 
     // Function to fetch time range options based on selected dataset
     const fetchTimeRangeOptions = async (dataset) => {
@@ -32,12 +38,52 @@ export default function NasaApp() {
         }
     };
 
+
+    const fetchFileName = async (dataset) => {
+        try {
+            const response = await fetch(`https://quak-finder.onrender.com/datasets/${dataset}`);
+            const data = await response.json();
+
+            console.log(data); // Log the response to inspect its structure
+
+            if (data.files && Array.isArray(data.files)) {
+                data.files.map((item) => {
+                    datefileOption.push(item.filename);
+                });
+            } else {
+                console.error("fetchFileName Error:", typeof data.files);
+            }
+
+        } catch (error) {
+            console.error('fetchFileName Error:', error);
+        }
+    }
+
+    const fetchProcessModel = async () => {
+        try {
+            const response = await fetch(`https://quak-finder.onrender.com/processing-methods`);
+            const data = await response.json();
+            console.log("Process Model Data show" + data);
+            if (data && Array.isArray(data)) {
+                data.map((item) => {
+                    console.log("Process Model: " + item.bandpass);
+                });
+            }
+
+        } catch (error) {
+            console.error('Process Model Error:', error);
+        }
+    }
+
     // Trigger the API call whenever the dataset changes
     useEffect(() => {
         if (dataset) {
-            fetchTimeRangeOptions(dataset);
+            // fetchTimeRangeOptions(dataset);
+            fetchFileName(dataset)
+            fetchProcessModel();
         } else {
-            setTimeRangeOptions([]); // Reset options if no dataset is selected
+            //setTimeRangeOptions([]); // Reset options if no dataset is selected
+            setDataFile([]);
         }
     }, [dataset]);
 
@@ -82,6 +128,7 @@ export default function NasaApp() {
                         value={dataset}
                         onChange={(e) => setDataset(e.target.value)}
                         options={[
+                            {value: '', label: 'Select one'},
                             {value: 'lunar', label: 'Lunar'},
                             {value: 'mars', label: 'Mars'},
                         ]}
@@ -89,12 +136,11 @@ export default function NasaApp() {
                     />
 
                     {/* Time Range Selection */}
-                    <SelectBox
-                        label="Select Time Range"
-                        value={timeRange}
-                        onChange={(e) => setTimeRange(e.target.value)}
-                        options={timeRangeOptions} // Dynamically fetched options
-                        disabled={!dataset || timeRangeOptions.length === 0} // Disable if no dataset or options
+                    <Autocomplete
+                        disablePortal
+                        options={datefileOption}
+                        sx={{width: 300}}
+                        renderInput={(params) => <TextField {...params} label="Data File"/>}
                     />
 
                     {/* De-noising Method Selection */}
@@ -107,7 +153,7 @@ export default function NasaApp() {
                             {value: 'Method B', label: 'Method B'},
                             {value: 'Method C', label: 'Method C'},
                         ]}
-                        disabled={!timeRange}
+                        disabled={''}
                     />
 
                     {/* Submit Button */}
