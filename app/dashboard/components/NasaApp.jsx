@@ -1,81 +1,48 @@
-"use client";
 import {useEffect, useState} from 'react';
-import {useTheme} from '@mui/material/styles';
+import {useTheme, CircularProgress} from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import SelectBox from './Elements/SelectBox';
 import {Autocomplete, TextField} from "@mui/material";
-import LineChart from "@/app/components/lineChart"; // Assuming SelectBox is a styled Select component
+import LineChart from "@/app/components/lineChart";
 
 export default function NasaApp() {
     const theme = useTheme();
-    const colorPalette = [
-        theme.palette.primary.dark,
-        theme.palette.primary.main,
-        theme.palette.primary.light,
-    ];
 
     // State for each selection box
     const [dataset, setDataset] = useState('');
     const [method, setMethod] = useState('');
-    const [dataFile, setDataFile] = useState([]);
+    const [dataFile, setDataFile] = useState('');
     const [plotData, setPlotData] = useState(null);
-    const datefileOption = [];
+    const [datefileOptions, setDatefileOptions] = useState([]);
+    const [loadingFiles, setLoadingFiles] = useState(false);
+    const [loadingData, setLoadingData] = useState(false);
 
-
-    // Function to fetch time range options based on selected dataset
-    // const fetchTimeRangeOptions = async (dataset) => {
-    //     try {
-    //         const response = await fetch(`https://quak-finder.onrender.com/datasets/${dataset}/timerange`); // Example API call
-    //         const data = await response.json();
-    //         console.log(data);
-    //         setTimeRangeOptions(data); // Assuming API returns { timeRanges: [...] }
-    //     } catch (error) {
-    //         console.error('Error fetching time range options:', error);
-    //     }
-    // };
-
-
+    // Function to fetch file names based on selected dataset
     const fetchFileName = async (dataset) => {
+        setLoadingFiles(true); // Start loading spinner
         try {
             const response = await fetch(`https://quak-finder.onrender.com/datasets/${dataset}`);
             const data = await response.json();
 
-            console.log(data); // Log the response to inspect its structure
-
             if (data.files && Array.isArray(data.files)) {
-                data.files.map((item) => {
-                    datefileOption.push(item.filename);
-                });
+                const options = data.files.map((item) => item.filename);
+                setDatefileOptions(options);
             } else {
                 console.error("fetchFileName Error:", typeof data.files);
             }
-
         } catch (error) {
             console.error('fetchFileName Error:', error);
+        } finally {
+            setLoadingFiles(false); // Stop loading spinner
         }
-    }
+    };
 
-    const fetchProcessModel = async () => {
-        try {
-            const response = await fetch(`https://quak-finder.onrender.com/processing-methods`);
-            const data = await response.json();
-            console.log("Process Model Data show" + data);
-            if (data && Array.isArray(data)) {
-                data.map((item) => {
-                    console.log("Process Model: " + item.bandpass);
-                });
-            }
-
-        } catch (error) {
-            console.error('Process Model Error:', error);
-        }
-    }
-
-
+    // Function to fetch raw data based on selected dataset and datafile
     const fetchRawData = async (datasets, filenames) => {
+        setLoadingData(true); // Start loading spinner
         try {
             const response = await fetch(`/api/datafile/${datasets}/${filenames}`, {
                 mode: "no-cors",
@@ -83,49 +50,46 @@ export default function NasaApp() {
             });
             const data = await response.json();
             setPlotData(data);
-            return {
-                props: {
-                    plotData: data,  // Pass the fetched data as props
-                },
-            };
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error('Error fetching raw data:', error);
+        } finally {
+            setLoadingData(false); // Stop loading spinner
         }
     };
 
-
-// Trigger the API call whenever the dataset changes
+    // Trigger file fetching whenever the dataset changes
     useEffect(() => {
         if (dataset) {
-            // fetchTimeRangeOptions(dataset);
-            fetchFileName(dataset)
-            //fetchProcessModel();
+            fetchFileName(dataset);
         } else {
-            //setTimeRangeOptions([]); // Reset options if no dataset is selected
-            setDataFile([]);
+            setDatefileOptions([]);
+            setDataFile('');
+            setPlotData(null);
         }
     }, [dataset]);
 
+    // Trigger raw data fetching when dataset and datafile are selected
     useEffect(() => {
         if (dataFile && dataset) {
             fetchRawData(dataset, dataFile);
-        } else {
-            setDataFile([])
         }
-    }, [dataFile, dataset]);
+    }, [dataFile]);
+
+    // Safely access metadata from plotData, with fallback for missing values
+    const metadata = plotData?.metadata || {}; // Use an empty object if metadata is missing
+    const plotDataset = metadata?.dataset || 'No dataset'; // Provide a fallback if dataset is missing
 
     const handleSubmit = async () => {
-        if (!dataset || !timeRange || !method) {
+        if (!dataset || !dataFile || !method) {
             alert('Please make sure all selections are made.');
             return;
         }
-
 
         try {
             const response = await fetch('/api/sendData', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({dataset, timeRange, method}),
+                body: JSON.stringify({dataset, dataFile, method}),
             });
 
             if (response.ok) {
@@ -141,14 +105,7 @@ export default function NasaApp() {
     return (
         <Card variant="outlined" sx={{width: '100%'}}>
             <CardContent>
-                <Stack
-                    direction="row"
-                    sx={{
-                        alignContent: {xs: 'center', sm: 'flex-start'},
-                        alignItems: 'center',
-                        gap: 2,
-                    }}
-                >
+                <Stack direction="row" sx={{alignItems: 'center', gap: 2}}>
                     {/* Dataset Selection */}
                     <SelectBox
                         label="Select Dataset"
@@ -159,17 +116,20 @@ export default function NasaApp() {
                             {value: 'lunar', label: 'Lunar'},
                             {value: 'mars', label: 'Mars'},
                         ]}
-
                     />
 
-                    {/* Time Range Selection */}
-                    <Autocomplete
-                        disablePortal
-                        options={datefileOption}
-                        sx={{width: 300}}
-                        renderInput={(params) => <TextField {...params} label="Data File"/>}
-                        onChange={(e) => setDataFile(e.target.value)}
-                    />
+                    {/* Data File Selection with Loading Spinner */}
+                    {loadingFiles ? (
+                        <CircularProgress/>
+                    ) : (
+                        <Autocomplete
+                            disablePortal
+                            options={datefileOptions}
+                            sx={{width: 300}}
+                            renderInput={(params) => <TextField {...params} label="Data File"/>}
+                            onChange={(e, newValue) => setDataFile(newValue)}
+                        />
+                    )}
 
                     {/* De-noising Method Selection */}
                     <SelectBox
@@ -181,7 +141,6 @@ export default function NasaApp() {
                             {value: 'Method B', label: 'Method B'},
                             {value: 'Method C', label: 'Method C'},
                         ]}
-                        disabled={''}
                     />
 
                     {/* Submit Button */}
@@ -189,7 +148,13 @@ export default function NasaApp() {
                         Generate
                     </Button>
                 </Stack>
-                <LineChart plotData={plotData}/>
+
+                {/* Loading Spinner for Data Fetch */}
+                {loadingData ? (
+                    <CircularProgress/>
+                ) : (
+                    <LineChart plotData={plotData}/>
+                )}
             </CardContent>
         </Card>
     );

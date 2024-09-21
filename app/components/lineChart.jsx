@@ -4,7 +4,7 @@ import {useEffect} from 'react';
 import Plotly from 'plotly.js-dist';
 
 export default function LineChart({plotData}) {
-    console.log(plotData);
+
     useEffect(() => {
         if (plotData) {
             // Extract metadata and traces from the passed plotData prop
@@ -23,7 +23,7 @@ export default function LineChart({plotData}) {
                 title: `Dataset: ${dataset}, File: ${filename}`,
                 xaxis: {
                     title: 'Time (seconds)',
-                    range: [0, Math.max(...plotData.traces[0].time)]
+                    rangeslider: {}
                 },
                 yaxis: {title: 'Amplitude'},
                 annotations: [
