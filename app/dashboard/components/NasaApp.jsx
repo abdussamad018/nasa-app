@@ -6,7 +6,8 @@ import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import SelectBox from './Elements/SelectBox';
-import {Autocomplete, TextField} from "@mui/material"; // Assuming SelectBox is a styled Select component
+import {Autocomplete, TextField} from "@mui/material";
+import LineChart from "@/app/components/lineChart"; // Assuming SelectBox is a styled Select component
 
 export default function NasaApp() {
     const theme = useTheme();
@@ -18,25 +19,23 @@ export default function NasaApp() {
 
     // State for each selection box
     const [dataset, setDataset] = useState('');
-    const [timeRange, setTimeRange] = useState('');
     const [method, setMethod] = useState('');
-    const [timeRangeOptions, setTimeRangeOptions] = useState([]);
     const [dataFile, setDataFile] = useState([]);
-
+    const [plotData, setPlotData] = useState(null);
     const datefileOption = [];
 
 
     // Function to fetch time range options based on selected dataset
-    const fetchTimeRangeOptions = async (dataset) => {
-        try {
-            const response = await fetch(`https://quak-finder.onrender.com/datasets/${dataset}/timerange`); // Example API call
-            const data = await response.json();
-            console.log(data);
-            setTimeRangeOptions(data); // Assuming API returns { timeRanges: [...] }
-        } catch (error) {
-            console.error('Error fetching time range options:', error);
-        }
-    };
+    // const fetchTimeRangeOptions = async (dataset) => {
+    //     try {
+    //         const response = await fetch(`https://quak-finder.onrender.com/datasets/${dataset}/timerange`); // Example API call
+    //         const data = await response.json();
+    //         console.log(data);
+    //         setTimeRangeOptions(data); // Assuming API returns { timeRanges: [...] }
+    //     } catch (error) {
+    //         console.error('Error fetching time range options:', error);
+    //     }
+    // };
 
 
     const fetchFileName = async (dataset) => {
@@ -75,17 +74,45 @@ export default function NasaApp() {
         }
     }
 
-    // Trigger the API call whenever the dataset changes
+
+    const fetchRawData = async (datasets, filenames) => {
+        try {
+            const response = await fetch(`/api/datafile/${datasets}/${filenames}`, {
+                mode: "no-cors",
+                cache: "no-cache",
+            });
+            const data = await response.json();
+            setPlotData(data);
+            return {
+                props: {
+                    plotData: data,  // Pass the fetched data as props
+                },
+            };
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+
+// Trigger the API call whenever the dataset changes
     useEffect(() => {
         if (dataset) {
             // fetchTimeRangeOptions(dataset);
             fetchFileName(dataset)
-            fetchProcessModel();
+            //fetchProcessModel();
         } else {
             //setTimeRangeOptions([]); // Reset options if no dataset is selected
             setDataFile([]);
         }
     }, [dataset]);
+
+    useEffect(() => {
+        if (dataFile && dataset) {
+            fetchRawData(dataset, dataFile);
+        } else {
+            setDataFile([])
+        }
+    }, [dataFile, dataset]);
 
     const handleSubmit = async () => {
         if (!dataset || !timeRange || !method) {
@@ -141,6 +168,7 @@ export default function NasaApp() {
                         options={datefileOption}
                         sx={{width: 300}}
                         renderInput={(params) => <TextField {...params} label="Data File"/>}
+                        onChange={(e) => setDataFile(e.target.value)}
                     />
 
                     {/* De-noising Method Selection */}
@@ -161,6 +189,7 @@ export default function NasaApp() {
                         Generate
                     </Button>
                 </Stack>
+                <LineChart plotData={plotData}/>
             </CardContent>
         </Card>
     );

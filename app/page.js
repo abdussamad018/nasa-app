@@ -4,9 +4,11 @@ import Box from '@mui/material/Box';
 import NasaApp from "@/app/dashboard/components/NasaApp";
 import MarsLineChart from "@/app/components/MarsLineChart";
 import {useEffect, useState} from "react";
+import LineChart from "@/app/components/lineChart";
 
 export default function Home() {
     const [result, setResult] = useState('');
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -34,10 +36,11 @@ export default function Home() {
     return (
         <Box sx={{display: 'flex'}}>
             <NasaApp/>
-            <div>
-                <h1>Mars Trace Line Chart</h1>
-                {/*<MarsLineChart data={result}/>*/}
-            </div>
+
+
         </Box>
-    );
+
+
+    )
+        ;
 }
